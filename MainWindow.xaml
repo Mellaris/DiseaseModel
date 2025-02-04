@@ -1,0 +1,46 @@
+﻿<Window x:Class="Covid.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Covid"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="700" Width="900">
+    <Grid>
+        <!-- Основная область для отображения города -->
+        <Canvas Name="CityCanvas" Background="LightGray" Width="600" Height="600" 
+                HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" />
+
+        <!-- Панель управления -->
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Right" Margin="10">
+            <TextBlock Text="Настройки симуляции" FontWeight="Bold" Margin="0,0,0,10" />
+
+            <!-- Поле для ввода населения -->
+            <TextBlock Text="Количество жителей:" />
+            <TextBox Name="PopulationInput" Width="150" Height="30" Text="500" Margin="0,5,0,15" />
+
+            <!-- Поле для выбора вероятности заражения -->
+            <TextBlock Text="Вероятность заражения (CP):" />
+            <ComboBox Name="InfectionProbabilityInput" Width="150" Height="30" Margin="0,5,0,15">
+                <ComboBoxItem Content="10%" IsSelected="True" />
+                <ComboBoxItem Content="20%" />
+                <ComboBoxItem Content="30%" />
+            </ComboBox>
+
+            <!-- Поле для выбора радиуса заражения -->
+            <TextBlock Text="Радиус заражения (Q):" />
+            <TextBox Name="InfectionRadiusInput" Width="150" Height="30" Text="15" Margin="0,5,0,15" />
+
+            <!-- Поле для выбора продолжительности болезни -->
+            <TextBlock Text="Продолжительность болезни (DT):" />
+            <ComboBox Name="DiseaseDurationInput" Width="150" Height="30" Margin="0,5,0,15">
+                <ComboBoxItem Content="14 дней" IsSelected="True" />
+                <ComboBoxItem Content="21 день" />
+                <ComboBoxItem Content="38 дней" />
+            </ComboBox>
+
+            <!-- Кнопка запуска симуляции -->
+            <Button Content="Запустить симуляцию" Width="150" Height="40" Click="StartSimulation_Click" />
+        </StackPanel>
+    </Grid>
+</Window>

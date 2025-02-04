@@ -1,0 +1,15 @@
+C:\Users\prdb\Desktop\Covid\bin\Debug\Covid.exe.config
+C:\Users\prdb\Desktop\Covid\bin\Debug\Covid.exe
+C:\Users\prdb\Desktop\Covid\bin\Debug\Covid.pdb
+C:\Users\prdb\Desktop\Covid\obj\Debug\Covid.csproj.AssemblyReference.cache
+C:\Users\prdb\Desktop\Covid\obj\Debug\MainWindow.g.cs
+C:\Users\prdb\Desktop\Covid\obj\Debug\App.g.cs
+C:\Users\prdb\Desktop\Covid\obj\Debug\Covid_MarkupCompile.cache
+C:\Users\prdb\Desktop\Covid\obj\Debug\Covid_MarkupCompile.lref
+C:\Users\prdb\Desktop\Covid\obj\Debug\MainWindow.baml
+C:\Users\prdb\Desktop\Covid\obj\Debug\Covid.g.resources
+C:\Users\prdb\Desktop\Covid\obj\Debug\Covid.Properties.Resources.resources
+C:\Users\prdb\Desktop\Covid\obj\Debug\Covid.csproj.GenerateResource.cache
+C:\Users\prdb\Desktop\Covid\obj\Debug\Covid.csproj.CoreCompileInputs.cache
+C:\Users\prdb\Desktop\Covid\obj\Debug\Covid.exe
+C:\Users\prdb\Desktop\Covid\obj\Debug\Covid.pdb
