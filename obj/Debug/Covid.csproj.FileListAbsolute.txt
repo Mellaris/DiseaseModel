@@ -13,3 +13,10 @@ C:\Users\prdb\Desktop\Covid\obj\Debug\Covid.csproj.GenerateResource.cache
 C:\Users\prdb\Desktop\Covid\obj\Debug\Covid.csproj.CoreCompileInputs.cache
 C:\Users\prdb\Desktop\Covid\obj\Debug\Covid.exe
 C:\Users\prdb\Desktop\Covid\obj\Debug\Covid.pdb
+C:\Users\prdb\Desktop\Covid\bin\Debug\LiveCharts.dll
+C:\Users\prdb\Desktop\Covid\bin\Debug\LiveCharts.Wpf.dll
+C:\Users\prdb\Desktop\Covid\bin\Debug\LiveCharts.pdb
+C:\Users\prdb\Desktop\Covid\bin\Debug\LiveCharts.xml
+C:\Users\prdb\Desktop\Covid\bin\Debug\LiveCharts.Wpf.pdb
+C:\Users\prdb\Desktop\Covid\bin\Debug\LiveCharts.Wpf.xml
+C:\Users\prdb\Desktop\Covid\obj\Debug\Covid.csproj.Up2Date

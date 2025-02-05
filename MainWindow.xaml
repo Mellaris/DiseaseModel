@@ -3,44 +3,87 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:lvc ="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         xmlns:local="clr-namespace:Covid"
         mc:Ignorable="d"
         Title="MainWindow" Height="700" Width="900">
     <Grid>
-        <!-- Основная область для отображения города -->
-        <Canvas Name="CityCanvas" Background="LightGray" Width="600" Height="600" 
-                HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" />
+        <!-- Основное расположение элементов -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <!-- Карта города -->
+            <ColumnDefinition Width="0.5*" />
+            <!-- Карантин -->
+            <ColumnDefinition Width="1*" />
+            <!-- Панель управления -->
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*" />
+            <!-- Основная зона -->
+            <RowDefinition Height="1.5*" />
+            <!-- График -->
+        </Grid.RowDefinitions>
+
+        <!-- Карта города -->
+        <Canvas Name="CityCanvas" Grid.Column="0" Background="LightGray" Margin="10"/>
+
+        <!-- Карантинная зона -->
+        <Canvas Name="QuarantineCanvas" Grid.Column="1" Background="LightBlue" Margin="10"/>
 
         <!-- Панель управления -->
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Right" Margin="10">
-            <TextBlock Text="Настройки симуляции" FontWeight="Bold" Margin="0,0,0,10" />
+        <StackPanel Grid.Column="2" Margin="10">
+            <TextBlock Text="Настройки модели" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
 
-            <!-- Поле для ввода населения -->
-            <TextBlock Text="Количество жителей:" />
-            <TextBox Name="PopulationInput" Width="150" Height="30" Text="500" Margin="0,5,0,15" />
+            <TextBlock Text="Число жителей (K):"/>
+            <TextBox Name="PopulationBox" Text="500"/>
 
-            <!-- Поле для выбора вероятности заражения -->
-            <TextBlock Text="Вероятность заражения (CP):" />
-            <ComboBox Name="InfectionProbabilityInput" Width="150" Height="30" Margin="0,5,0,15">
-                <ComboBoxItem Content="10%" IsSelected="True" />
-                <ComboBoxItem Content="20%" />
-                <ComboBoxItem Content="30%" />
+            <TextBlock Text="Вероятность заражения (CP):"/>
+            <ComboBox Name="CPBox" >
+                <ComboBoxItem Content="10%" Tag="0.1"/>
+                <ComboBoxItem Content="20%" Tag="0.2" IsSelected="True"/>
+                <ComboBoxItem Content="30%" Tag="0.3"/>
             </ComboBox>
 
-            <!-- Поле для выбора радиуса заражения -->
-            <TextBlock Text="Радиус заражения (Q):" />
-            <TextBox Name="InfectionRadiusInput" Width="150" Height="30" Text="15" Margin="0,5,0,15" />
-
-            <!-- Поле для выбора продолжительности болезни -->
-            <TextBlock Text="Продолжительность болезни (DT):" />
-            <ComboBox Name="DiseaseDurationInput" Width="150" Height="30" Margin="0,5,0,15">
-                <ComboBoxItem Content="14 дней" IsSelected="True" />
-                <ComboBoxItem Content="21 день" />
-                <ComboBoxItem Content="38 дней" />
+            <TextBlock Text="Соблюдение изоляции (SD):"/>
+            <ComboBox Name="SDBox">
+                <ComboBoxItem Content="10%" Tag="0.1"/>
+                <ComboBoxItem Content="40%" Tag="0.4"/>
+                <ComboBoxItem Content="75%" Tag="0.75" IsSelected="True"/>
+                <ComboBoxItem Content="90%" Tag="0.9"/>
             </ComboBox>
 
-            <!-- Кнопка запуска симуляции -->
-            <Button Content="Запустить симуляцию" Width="150" Height="40" Click="StartSimulation_Click" />
+            <TextBlock Text="Длительность карантина (IP):"/>
+            <ComboBox Name="IPBox">
+                <ComboBoxItem Content="30 дней" Tag="30" IsSelected="True"/>
+                <ComboBoxItem Content="45 дней" Tag="45"/>
+                <ComboBoxItem Content="70 дней" Tag="70"/>
+            </ComboBox>
+
+            <TextBlock Text="Время болезни (DT):"/>
+            <ComboBox Name="DTBox">
+                <ComboBoxItem Content="14 дней" Tag="14" IsSelected="True"/>
+                <ComboBoxItem Content="21 день" Tag="21"/>
+                <ComboBoxItem Content="38 дней" Tag="38"/>
+            </ComboBox>
+
+            <Button Name="StartButton" Content="Запустить симуляцию" Click="StartSimulation_Click" Margin="0,10,0,0"/>
         </StackPanel>
+
+        <!-- График заражений -->
+        <lvc:CartesianChart Name="InfectionChart" Grid.Row="1" Grid.ColumnSpan="3" Margin="10">
+            <lvc:CartesianChart.Series>
+                <lvc:LineSeries Title="S(t)" Values="{Binding SusceptibleValues}" Stroke="Blue"/>
+                <lvc:LineSeries Title="I(t)" Values="{Binding InfectedValues}" Stroke="Red"/>
+                <lvc:LineSeries Title="R(t)" Values="{Binding RemovedValues}" Stroke="Green"/>
+                <lvc:LineSeries Title="D(t)" Values="{Binding DeadValues}" Stroke="Gray"/>
+            </lvc:CartesianChart.Series>
+            <lvc:CartesianChart.AxisX>
+                <lvc:Axis Title="Дни"/>
+            </lvc:CartesianChart.AxisX>
+            <lvc:CartesianChart.AxisY>
+                <lvc:Axis Title="Количество людей"/>
+            </lvc:CartesianChart.AxisY>
+        </lvc:CartesianChart>
     </Grid>
 </Window>

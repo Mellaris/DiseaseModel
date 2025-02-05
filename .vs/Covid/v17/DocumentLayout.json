@@ -3,12 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\prdb\\Desktop\\Covid\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{6FE05988-C73D-49AC-A3E5-CAF0F0B36C11}|Covid.csproj|C:\\Users\\prdb\\Desktop\\Covid\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{6FE05988-C73D-49AC-A3E5-CAF0F0B36C11}|Covid.csproj|c:\\users\\prdb\\desktop\\covid\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6FE05988-C73D-49AC-A3E5-CAF0F0B36C11}|Covid.csproj|solutionrelative:mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6FE05988-C73D-49AC-A3E5-CAF0F0B36C11}|Covid.csproj|c:\\users\\prdb\\desktop\\covid\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "AbsoluteMoniker": "D:0:0:{6FE05988-C73D-49AC-A3E5-CAF0F0B36C11}|Covid.csproj|C:\\Users\\prdb\\Desktop\\Covid\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{6FE05988-C73D-49AC-A3E5-CAF0F0B36C11}|Covid.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\prdb\\Desktop\\Covid\\packages\\LiveCharts.0.9.7\\readme.txt||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:packages\\LiveCharts.0.9.7\\readme.txt||{8B382828-6202-11D1-8870-0000F87579D2}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,8 +22,21 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "readme.txt",
+              "DocumentMoniker": "C:\\Users\\prdb\\Desktop\\Covid\\packages\\LiveCharts.0.9.7\\readme.txt",
+              "RelativeDocumentMoniker": "packages\\LiveCharts.0.9.7\\readme.txt",
+              "ToolTip": "C:\\Users\\prdb\\Desktop\\Covid\\packages\\LiveCharts.0.9.7\\readme.txt",
+              "RelativeToolTip": "packages\\LiveCharts.0.9.7\\readme.txt",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
+              "WhenOpened": "2025-02-05T07:40:26.461Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 1,
@@ -40,7 +57,7 @@
               "RelativeDocumentMoniker": "MainWindow.xaml.cs",
               "ToolTip": "C:\\Users\\prdb\\Desktop\\Covid\\MainWindow.xaml.cs",
               "RelativeToolTip": "MainWindow.xaml.cs",
-              "ViewState": "AgIAAAwAAAAAAAAAAADwvxYAAAAPAAAAAAAAAA==",
+              "ViewState": "AgIAABcAAAAAAAAAAAAuwCwAAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-02-04T12:05:20.819Z",
               "EditorCaption": ""

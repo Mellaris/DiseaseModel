@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -13,180 +14,195 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using LiveCharts;
+using LiveCharts.Wpf;
 
 namespace Covid
 {
-    public enum PersonState
+    public partial class MainWindow : Window
     {
-        Susceptible,
-        Infectious,
-        Removed
+        private Random random = new Random();
+        private List<Person> people = new List<Person>();
+        private Timer simulationTimer;
+        private int day = 0;
+
+        public ChartValues<int> SusceptibleValues { get; set; } = new ChartValues<int>();
+        public ChartValues<int> InfectedValues { get; set; } = new ChartValues<int>();
+        public ChartValues<int> RemovedValues { get; set; } = new ChartValues<int>();
+        public ChartValues<int> DeadValues { get; set; } = new ChartValues<int>();
+
+        public double InfectionProbability { get; set; } = 0.5;  // Начальная вероятность заражения (50%)
+        public int InfectionDuration { get; set; } = 14;  // Длительность болезни в днях (например, 14 дней)
+
+        public MainWindow()
+        {
+            InitializeComponent();
+            DataContext = this;
+        }
+
+        private void StartSimulation_Click(object sender, RoutedEventArgs e)
+        {
+            InitializeSimulation();
+            simulationTimer = new Timer(500);  // Обновление раз в 5 секунд для более медленного времени
+            simulationTimer.Elapsed += (s, args) => Dispatcher.Invoke(UpdateSimulation);
+            simulationTimer.Start();
+        }
+
+        private void InitializeSimulation()
+        {
+            CityCanvas.Children.Clear();
+            QuarantineCanvas.Children.Clear();
+            people.Clear();
+            SusceptibleValues.Clear();
+            InfectedValues.Clear();
+            RemovedValues.Clear();
+            DeadValues.Clear();
+            day = 0;
+
+            int population = int.Parse(PopulationBox.Text);
+            for (int i = 0; i < population; i++)
+            {
+                var person = new Person
+                {
+                    X = random.Next((int)CityCanvas.ActualWidth),
+                    Y = random.Next((int)CityCanvas.ActualHeight),
+                    State = i == 0 ? State.Infected : State.Susceptible,  // Первый человек сразу заражен
+                    InfectedDays = 0  // Начальный счётчик дней заражения
+                };
+                people.Add(person);
+                DrawPerson(person);
+            }
+        }
+
+        private void UpdateSimulation()
+        {
+            day++;
+
+            // Перемещаем людей по канвасу
+            foreach (var person in people)
+            {
+                if (person.State == State.Susceptible || person.State == State.Infected)
+                {
+                    person.X += random.Next(-5, 6);
+                    person.Y += random.Next(-5, 6);
+                }
+            }
+
+            // Заражение людей
+            for (int i = 0; i < people.Count; i++)
+            {
+                if (people[i].State == State.Infected)
+                {
+                    foreach (var other in people)
+                    {
+                        if (other.State == State.Susceptible &&
+                            Math.Abs(people[i].X - other.X) < 15 &&  // Радиус заражения 15
+                            Math.Abs(people[i].Y - other.Y) < 15)  // Проверка расстояния
+                        {
+                            // Применение вероятности заражения
+                            double infectionChance = InfectionProbability; // Можно добавить логику на основе других факторов
+
+                            if (random.NextDouble() < infectionChance)
+                            {
+                                other.State = State.Infected; // Заражаем
+                                other.InfectedDays = 0;  // Счётчик дней заражения обнуляется
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            // Обработка состояния инфицированных
+            foreach (var person in people)
+            {
+                if (person.State == State.Infected)
+                {
+                    // Увеличиваем количество дней заражения
+                    person.InfectedDays++;
+
+                    if (person.InfectedDays >= InfectionDuration)
+                    {
+                        // После истечения времени заражения проверяем вероятность выздоровления или смерти
+                        if (random.NextDouble() < 0.12) // Вероятность смерти
+                        {
+                            person.State = State.Dead;
+                        }
+                        else // Вероятность выздоровления
+                        {
+                            person.State = State.Recovered;
+                        }
+                    }
+                }
+            }
+
+            // Подсчёт людей в разных состояниях
+            int s = people.Count(p => p.State == State.Susceptible);
+            int q = people.Count(p => p.State == State.Infected);
+            int r = people.Count(p => p.State == State.Recovered);
+            int d = people.Count(p => p.State == State.Dead);
+
+            SusceptibleValues.Add(s);
+            InfectedValues.Add(q);
+            RemovedValues.Add(r);
+            DeadValues.Add(d);
+
+            Redraw();
+        }
+
+        private void Redraw()
+        {
+            CityCanvas.Children.Clear();
+            foreach (var person in people)
+            {
+                DrawPerson(person);
+            }
+        }
+
+        private void DrawPerson(Person person)
+        {
+            Ellipse ellipse = new Ellipse
+            {
+                Width = 5,
+                Height = 5,
+                Fill = person.State == State.Susceptible ? Brushes.Blue :
+                       person.State == State.Infected ? Brushes.Red :
+                       person.State == State.Recovered ? Brushes.Green :
+                       Brushes.Gray
+            };
+
+            Canvas.SetLeft(ellipse, person.X);
+            Canvas.SetTop(ellipse, person.Y);
+            CityCanvas.Children.Add(ellipse);
+        }
     }
 
     public class Person
     {
         public double X { get; set; }
         public double Y { get; set; }
-        public int DX { get; set; }
-        public int DY { get; set; }
-        public PersonState State { get; set; }
-        public int DaysInfected { get; set; }
+        public State State { get; set; }
+        public int InfectedDays { get; set; }  // Количество дней, в течение которых человек болеет
     }
 
-    public partial class MainWindow : Window
+    public enum State
     {
-        private const int CitySize = 600; // Размер города в пикселях
-        private List<Person> population = new List<Person>();
-        private Random random = new Random();
-        private DispatcherTimer timer = new DispatcherTimer();
-
-        // Настройки
-        private int populationCount = 500;
-        private double infectionProbability = 0.1; // 10%
-        private int infectionRadius = 15;
-        private int diseaseDuration = 14; // 14 дней
-
-        public MainWindow()
-        {
-            InitializeComponent();
-            timer.Interval = TimeSpan.FromMilliseconds(50); // Обновление каждые 50 мс
-            timer.Tick += Timer_Tick;
-        }
-
-        private void StartSimulation_Click(object sender, RoutedEventArgs e)
-        {
-            // Получаем данные из интерфейса
-            int count;
-            if (int.TryParse(PopulationInput.Text, out count) && count >= 12000 && count <= 100000)
-            {
-                populationCount = count;
-            }
-            else
-            {
-                MessageBox.Show("Введите корректное число жителей (от 12000 до 100000).");
-                return;
-            }
-
-            if (InfectionProbabilityInput.SelectedIndex == 0)
-                infectionProbability = 0.1;
-            else if (InfectionProbabilityInput.SelectedIndex == 1)
-                infectionProbability = 0.2;
-            else if (InfectionProbabilityInput.SelectedIndex == 2)
-                infectionProbability = 0.3;
-
-            int radius;
-            if (int.TryParse(InfectionRadiusInput.Text, out radius) && radius > 0)
-            {
-                infectionRadius = radius;
-            }
-            else
-            {
-                MessageBox.Show("Введите корректный радиус заражения.");
-                return;
-            }
-
-            if (DiseaseDurationInput.SelectedIndex == 0)
-                diseaseDuration = 14;
-            else if (DiseaseDurationInput.SelectedIndex == 1)
-                diseaseDuration = 21;
-            else if (DiseaseDurationInput.SelectedIndex == 2)
-                diseaseDuration = 38;
-
-            InitializeCity(populationCount);
-        }
-
-        private void InitializeCity(int populationCount)
-        {
-            population.Clear();
-            CityCanvas.Children.Clear();
-
-            for (int i = 0; i < populationCount; i++)
-            {
-                population.Add(new Person
-                {
-                    X = random.Next(0, CitySize),
-                    Y = random.Next(0, CitySize),
-                    DX = random.Next(-2, 3),
-                    DY = random.Next(-2, 3),
-                    State = i == 0 ? PersonState.Infectious : PersonState.Susceptible, // Один заражённый
-                    DaysInfected = 0
-                });
-            }
-
-            timer.Start();
-        }
-
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            UpdateCity();
-            UpdateCityCanvas();
-        }
-
-        private void UpdateCity()
-        {
-            foreach (var person in population.ToList())
-            {
-                // Движение
-                person.X += person.DX;
-                person.Y += person.DY;
-
-                if (person.X < 0 || person.X > CitySize)
-                {
-                    person.DX = -person.DX;
-                    person.X = Math.Max(0, Math.Min(person.X, CitySize));
-                }
-                if (person.Y < 0 || person.Y > CitySize)
-                {
-                    person.DY = -person.DY;
-                    person.Y = Math.Max(0, Math.Min(person.Y, CitySize));
-                }
-
-                // Логика заражения
-                if (person.State == PersonState.Infectious)
-                {
-                    person.DaysInfected++;
-                    if (person.DaysInfected >= diseaseDuration)
-                    {
-                        person.State = PersonState.Removed;
-                    }
-                }
-
-                if (person.State == PersonState.Susceptible)
-                {
-                    foreach (var other in population)
-                    {
-                        if (other.State == PersonState.Infectious)
-                        {
-                            double distance = Math.Sqrt(Math.Pow(person.X - other.X, 2) + Math.Pow(person.Y - other.Y, 2));
-                            if (distance < infectionRadius && random.NextDouble() < infectionProbability)
-                            {
-                                person.State = PersonState.Infectious;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private void UpdateCityCanvas()
-        {
-            CityCanvas.Children.Clear();
-
-            foreach (var person in population)
-            {
-                Ellipse ellipse = new Ellipse
-                {
-                    Width = 5,
-                    Height = 5,
-                    Fill = person.State == PersonState.Susceptible ? Brushes.Blue :
-                           person.State == PersonState.Infectious ? Brushes.Red : Brushes.Green
-                };
-
-                Canvas.SetLeft(ellipse, person.X);
-                Canvas.SetTop(ellipse, person.Y);
-                CityCanvas.Children.Add(ellipse);
-            }
-        }
+        Susceptible,
+        Infected,
+        Recovered,
+        Dead
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
