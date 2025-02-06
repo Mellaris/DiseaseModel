@@ -39,10 +39,10 @@
             <TextBox Name="PopulationBox" Text="500"/>
 
             <TextBlock Text="Вероятность заражения (CP):"/>
-            <ComboBox Name="CPBox" >
-                <ComboBoxItem Content="10%" Tag="0.1"/>
-                <ComboBoxItem Content="20%" Tag="0.2" IsSelected="True"/>
-                <ComboBoxItem Content="30%" Tag="0.3"/>
+            <ComboBox  Name="CPBox" SelectionChanged="CPBox_SelectionChanged" >
+                <ComboBoxItem Content="10%" Tag="10"/>
+                <ComboBoxItem Content="20%" Tag="20" IsSelected="True"/>
+                <ComboBoxItem Content="30%" Tag="30"/>
             </ComboBox>
 
             <TextBlock Text="Соблюдение изоляции (SD):"/>
@@ -61,10 +61,17 @@
             </ComboBox>
 
             <TextBlock Text="Время болезни (DT):"/>
-            <ComboBox Name="DTBox">
+            <ComboBox Name="DTBox" SelectionChanged="DTBox_SelectionChanged">
                 <ComboBoxItem Content="14 дней" Tag="14" IsSelected="True"/>
                 <ComboBoxItem Content="21 день" Tag="21"/>
                 <ComboBoxItem Content="38 дней" Tag="38"/>
+            </ComboBox>
+            
+            <TextBlock Text="Невыявленные случаи (AC):"/>
+            <ComboBox Name="ASBox" SelectionChanged="ComboBox_SelectionChanged">
+                <ComboBoxItem Content="5%" Tag="5" IsSelected="True"/>
+                <ComboBoxItem Content="40%" Tag="40"/>
+                <ComboBoxItem Content="70%" Tag="70"/>
             </ComboBox>
 
             <Button Name="StartButton" Content="Запустить симуляцию" Click="StartSimulation_Click" Margin="0,10,0,0"/>

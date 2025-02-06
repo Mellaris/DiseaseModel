@@ -30,20 +30,33 @@ namespace Covid
         public ChartValues<int> InfectedValues { get; set; } = new ChartValues<int>();
         public ChartValues<int> RemovedValues { get; set; } = new ChartValues<int>();
         public ChartValues<int> DeadValues { get; set; } = new ChartValues<int>();
+        public ChartValues<int> InfectedButNoValues { get; set; } = new ChartValues<int>();
 
-        public double InfectionProbability { get; set; } = 0.5;  // Начальная вероятность заражения (50%)
+        public int InfectionProbability { get; set; } = 50;  // Начальная вероятность заражения (50%)
         public int InfectionDuration { get; set; } = 14;  // Длительность болезни в днях (например, 14 дней)
+        public int ASInfection { get; set; } = 5;
 
         public MainWindow()
         {
             InitializeComponent();
             DataContext = this;
         }
-
+        private void CPBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            InfectionProbability = int.Parse(((ComboBoxItem)CPBox.SelectedItem).Tag.ToString());
+        }
+        private void DTBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            InfectionDuration = int.Parse(((ComboBoxItem)DTBox.SelectedItem).Tag.ToString());
+        }
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ASInfection = int.Parse(((ComboBoxItem)ASBox.SelectedItem).Tag.ToString());
+        }
         private void StartSimulation_Click(object sender, RoutedEventArgs e)
         {
             InitializeSimulation();
-            simulationTimer = new Timer(500);  // Обновление раз в 5 секунд для более медленного времени
+            simulationTimer = new Timer(700);  
             simulationTimer.Elapsed += (s, args) => Dispatcher.Invoke(UpdateSimulation);
             simulationTimer.Start();
         }
@@ -60,18 +73,22 @@ namespace Covid
             day = 0;
 
             int population = int.Parse(PopulationBox.Text);
-            for (int i = 0; i < population; i++)
+            if(population >= 500 &&  population <= 4000)
             {
-                var person = new Person
+                for (int i = 0; i < population; i++)
                 {
-                    X = random.Next((int)CityCanvas.ActualWidth),
-                    Y = random.Next((int)CityCanvas.ActualHeight),
-                    State = i == 0 ? State.Infected : State.Susceptible,  // Первый человек сразу заражен
-                    InfectedDays = 0  // Начальный счётчик дней заражения
-                };
-                people.Add(person);
-                DrawPerson(person);
+                    var person = new Person
+                    {
+                        X = random.Next((int)CityCanvas.ActualWidth),
+                        Y = random.Next((int)CityCanvas.ActualHeight),
+                        State = i == 0 ? State.Infected : State.Susceptible,  // Первый человек сразу заражен
+                        InfectedDays = 0  // Начальный счётчик дней заражения
+                    };
+                    people.Add(person);
+                    DrawPerson(person);
+                }
             }
+       
         }
 
         private void UpdateSimulation()
@@ -81,7 +98,7 @@ namespace Covid
             // Перемещаем людей по канвасу
             foreach (var person in people)
             {
-                if (person.State == State.Susceptible || person.State == State.Infected)
+                if (person.State == State.Susceptible || person.State == State.Infected || person.State == State.Recovered || person.State == State.InfectedButNo)
                 {
                     person.X += random.Next(-5, 6);
                     person.Y += random.Next(-5, 6);
@@ -91,7 +108,7 @@ namespace Covid
             // Заражение людей
             for (int i = 0; i < people.Count; i++)
             {
-                if (people[i].State == State.Infected)
+                if (people[i].State == State.Infected || people[i].State == State.InfectedButNo)
                 {
                     foreach (var other in people)
                     {
@@ -100,12 +117,19 @@ namespace Covid
                             Math.Abs(people[i].Y - other.Y) < 15)  // Проверка расстояния
                         {
                             // Применение вероятности заражения
-                            double infectionChance = InfectionProbability; // Можно добавить логику на основе других факторов
+                            int infectionChance = InfectionProbability; // Можно добавить логику на основе других факторов
+                            int infectionNo = ASInfection;
 
-                            if (random.NextDouble() < infectionChance)
+
+                            if (random.Next(0, 101) <= infectionChance)
                             {
                                 other.State = State.Infected; // Заражаем
                                 other.InfectedDays = 0;  // Счётчик дней заражения обнуляется
+
+                                if(random.Next(0,101) <= ASInfection) //Добавляем невыявленные случаи
+                                {
+                                    other.State = State.InfectedButNo;
+                                }
                             }
                         }
                     }
@@ -116,7 +140,7 @@ namespace Covid
             // Обработка состояния инфицированных
             foreach (var person in people)
             {
-                if (person.State == State.Infected)
+                if (person.State == State.Infected || person.State == State.InfectedButNo)
                 {
                     // Увеличиваем количество дней заражения
                     person.InfectedDays++;
@@ -141,6 +165,9 @@ namespace Covid
             int q = people.Count(p => p.State == State.Infected);
             int r = people.Count(p => p.State == State.Recovered);
             int d = people.Count(p => p.State == State.Dead);
+            int z = people.Count(p => p.State == State.InfectedButNo);
+
+            s = s + z;
 
             SusceptibleValues.Add(s);
             InfectedValues.Add(q);
@@ -167,6 +194,7 @@ namespace Covid
                 Height = 5,
                 Fill = person.State == State.Susceptible ? Brushes.Blue :
                        person.State == State.Infected ? Brushes.Red :
+                       person.State == State.InfectedButNo ? Brushes.Blue :
                        person.State == State.Recovered ? Brushes.Green :
                        Brushes.Gray
             };
@@ -175,6 +203,8 @@ namespace Covid
             Canvas.SetTop(ellipse, person.Y);
             CityCanvas.Children.Add(ellipse);
         }
+
+       
     }
 
     public class Person
@@ -190,7 +220,8 @@ namespace Covid
         Susceptible,
         Infected,
         Recovered,
-        Dead
+        Dead,
+        InfectedButNo
     }
 }
 
