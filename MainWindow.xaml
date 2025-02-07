@@ -26,10 +26,10 @@
         </Grid.RowDefinitions>
 
         <!-- Карта города -->
-        <Canvas Name="CityCanvas" Grid.Column="0" Background="LightGray" Margin="10"/>
+        <Canvas Height="430" Width="500" Name="CityCanvas" Grid.Column="0" Background="LightGray" Margin="10"/>
 
         <!-- Карантинная зона -->
-        <Canvas Name="QuarantineCanvas" Grid.Column="1" Background="LightBlue" Margin="10"/>
+        <Canvas Width="110" Height="430" Name="QuarantineCanvas" Grid.Column="1" Background="LightBlue" Margin="10"/>
 
         <!-- Панель управления -->
         <StackPanel Grid.Column="2" Margin="10">
@@ -54,7 +54,7 @@
             </ComboBox>
 
             <TextBlock Text="Длительность карантина (IP):"/>
-            <ComboBox Name="IPBox">
+            <ComboBox Name="IPBox" SelectionChanged="IPBox_SelectionChanged">
                 <ComboBoxItem Content="30 дней" Tag="30" IsSelected="True"/>
                 <ComboBoxItem Content="45 дней" Tag="45"/>
                 <ComboBoxItem Content="70 дней" Tag="70"/>

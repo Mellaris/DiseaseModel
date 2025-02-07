@@ -35,6 +35,7 @@ namespace Covid
         public int InfectionProbability { get; set; } = 50;  // Начальная вероятность заражения (50%)
         public int InfectionDuration { get; set; } = 14;  // Длительность болезни в днях (например, 14 дней)
         public int ASInfection { get; set; } = 5;
+        public int QuarantineDuration { get; set; } = 30;
 
         public MainWindow()
         {
@@ -52,6 +53,10 @@ namespace Covid
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ASInfection = int.Parse(((ComboBoxItem)ASBox.SelectedItem).Tag.ToString());
+        }
+        private void IPBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            QuarantineDuration = int.Parse(((ComboBoxItem)IPBox.SelectedItem).Tag.ToString());
         }
         private void StartSimulation_Click(object sender, RoutedEventArgs e)
         {
@@ -117,7 +122,7 @@ namespace Covid
                             Math.Abs(people[i].Y - other.Y) < 15)  // Проверка расстояния
                         {
                             // Применение вероятности заражения
-                            int infectionChance = InfectionProbability; // Можно добавить логику на основе других факторов
+                            int infectionChance = InfectionProbability; 
                             int infectionNo = ASInfection;
 
 
@@ -167,19 +172,49 @@ namespace Covid
             int d = people.Count(p => p.State == State.Dead);
             int z = people.Count(p => p.State == State.InfectedButNo);
 
-            s = s + z;
+            s += z;
 
             SusceptibleValues.Add(s);
             InfectedValues.Add(q);
             RemovedValues.Add(r);
             DeadValues.Add(d);
 
+            if(q > 50)
+            {
+                foreach(var person in people.Where(p => p.State == State.Infected && !p.InQuarantine))
+                {
+                    person.InQuarantine = true;
+                    person.DaysInQuarantine = 0;
+                    person.X = random.Next((int)QuarantineCanvas.ActualWidth);
+                    person.Y = random.Next((int)QuarantineCanvas.ActualHeight);
+                }
+            }
+            foreach (var person in people.Where(p => p.InQuarantine))
+            {
+                person.DaysInQuarantine++;
+
+                if (person.DaysInQuarantine >= QuarantineDuration) // Если дни карантина прошли
+                {
+                    if (random.NextDouble() < 0.12) // 12% вероятность смерти
+                    {
+                        person.State = State.Dead;
+                    }
+                    else
+                    {
+                        person.State = State.Recovered;
+                        person.InQuarantine = false;
+                        person.X = random.Next((int)CityCanvas.ActualWidth);
+                        person.Y = random.Next((int)CityCanvas.ActualHeight);
+                    }
+                }
+            }
             Redraw();
         }
 
         private void Redraw()
         {
             CityCanvas.Children.Clear();
+            QuarantineCanvas.Children.Clear();
             foreach (var person in people)
             {
                 DrawPerson(person);
@@ -199,12 +234,20 @@ namespace Covid
                        Brushes.Gray
             };
 
-            Canvas.SetLeft(ellipse, person.X);
-            Canvas.SetTop(ellipse, person.Y);
-            CityCanvas.Children.Add(ellipse);
+            if(person.InQuarantine)
+            {
+                Canvas.SetLeft(ellipse, person.X);
+                Canvas.SetTop(ellipse, person.Y);
+                QuarantineCanvas.Children.Add(ellipse);
+            }
+            else
+            {
+                Canvas.SetLeft(ellipse, person.X);
+                Canvas.SetTop(ellipse, person.Y);
+                CityCanvas.Children.Add(ellipse);
+            }
+          
         }
-
-       
     }
 
     public class Person
@@ -212,7 +255,9 @@ namespace Covid
         public double X { get; set; }
         public double Y { get; set; }
         public State State { get; set; }
-        public int InfectedDays { get; set; }  // Количество дней, в течение которых человек болеет
+        public int InfectedDays { get; set; } 
+        public int DaysInQuarantine {  get; set; } = 0;
+        public bool InQuarantine { get; set;} = false;
     }
 
     public enum State
@@ -224,16 +269,3 @@ namespace Covid
         InfectedButNo
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
