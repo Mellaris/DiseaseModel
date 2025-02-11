@@ -36,6 +36,7 @@ namespace Covid
         public int InfectionDuration { get; set; } = 14;  // Длительность болезни в днях (например, 14 дней)
         public int ASInfection { get; set; } = 5;
         public int QuarantineDuration { get; set; } = 30;
+        public int SocialDistancing { get; set; } = 75; // По умолчанию 75%
 
         public MainWindow()
         {
@@ -57,6 +58,10 @@ namespace Covid
         private void IPBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             QuarantineDuration = int.Parse(((ComboBoxItem)IPBox.SelectedItem).Tag.ToString());
+        }
+        private void SDBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SocialDistancing = int.Parse(((ComboBoxItem)SDBox.SelectedItem).Tag.ToString());
         }
         private void StartSimulation_Click(object sender, RoutedEventArgs e)
         {

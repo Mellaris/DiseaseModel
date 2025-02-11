@@ -46,11 +46,11 @@
             </ComboBox>
 
             <TextBlock Text="Соблюдение изоляции (SD):"/>
-            <ComboBox Name="SDBox">
-                <ComboBoxItem Content="10%" Tag="0.1"/>
-                <ComboBoxItem Content="40%" Tag="0.4"/>
-                <ComboBoxItem Content="75%" Tag="0.75" IsSelected="True"/>
-                <ComboBoxItem Content="90%" Tag="0.9"/>
+            <ComboBox SelectionChanged="SDBox_SelectionChanged" Name="SDBox">
+                <ComboBoxItem Content="10%" Tag="10"/>
+                <ComboBoxItem Content="40%" Tag="40"/>
+                <ComboBoxItem Content="75%" Tag="75" IsSelected="True"/>
+                <ComboBoxItem Content="90%" Tag="90"/>
             </ComboBox>
 
             <TextBlock Text="Длительность карантина (IP):"/>
