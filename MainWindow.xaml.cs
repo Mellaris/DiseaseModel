@@ -100,7 +100,22 @@ namespace Covid
             }
        
         }
-
+        private bool IsTooClose(Person person)
+        {
+            double safeDistance = 2 * QuarantineDuration;
+            foreach (var other in people)
+            {
+                if (other != person)
+                {
+                    double distance = Math.Sqrt(Math.Pow(person.X - other.X, 2) + Math.Pow(person.Y - other.Y, 2));
+                    if (distance < safeDistance)
+                    {
+                        return true; // Слишком близко к другому человеку
+                    }
+                }
+            }
+            return false;
+        }
         private void UpdateSimulation()
         {
             day++;
@@ -110,8 +125,13 @@ namespace Covid
             {
                 if (person.State == State.Susceptible || person.State == State.Infected || person.State == State.Recovered || person.State == State.InfectedButNo)
                 {
-                    person.X += random.Next(-5, 6);
-                    person.Y += random.Next(-5, 6);
+                    bool ignoresIsolation = random.Next(100) < (100 - SocialDistancing);
+
+                    if(ignoresIsolation || !IsTooClose(person))
+                    {
+                        person.X += random.Next(-5, 6);
+                        person.Y += random.Next(-5, 6);
+                    }                
                 }
             }
 
