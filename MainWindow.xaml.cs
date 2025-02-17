@@ -21,28 +21,32 @@ namespace Covid
 {
     public partial class MainWindow : Window
     {
-        private Random random = new Random();
-        private List<Person> people = new List<Person>();
-        private Timer simulationTimer;
-        private int day = 0;
+        private Random random = new Random(); // Генератор случайных чисел
+        private List<Person> people = new List<Person>(); // Список людей в симуляции
+        private Timer simulationTimer; // Таймер для обновления симуляции
+        private int day = 0; // Счётчик дней в симуляции
 
+        // Данные для графиков
         public ChartValues<int> SusceptibleValues { get; set; } = new ChartValues<int>();
         public ChartValues<int> InfectedValues { get; set; } = new ChartValues<int>();
         public ChartValues<int> RemovedValues { get; set; } = new ChartValues<int>();
         public ChartValues<int> DeadValues { get; set; } = new ChartValues<int>();
         public ChartValues<int> InfectedButNoValues { get; set; } = new ChartValues<int>();
 
-        public int InfectionProbability { get; set; } = 50;  // Начальная вероятность заражения (50%)
-        public int InfectionDuration { get; set; } = 14;  // Длительность болезни в днях (например, 14 дней)
-        public int ASInfection { get; set; } = 5;
-        public int QuarantineDuration { get; set; } = 30;
-        public int SocialDistancing { get; set; } = 75; // По умолчанию 75%
+
+        // Параметры симуляции
+        public int InfectionProbability { get; set; } = 50; // Вероятность заражения (в процентах)
+        public int InfectionDuration { get; set; } = 14; // Длительность болезни (в днях)
+        public int ASInfection { get; set; } = 5; // Вероятность бессимптомного заражения (в процентах)
+        public int QuarantineDuration { get; set; } = 30; // Длительность карантина (в днях)
+        public int SocialDistancing { get; set; } = 75; // Уровень социального дистанцирования (в процентах)
 
         public MainWindow()
         {
             InitializeComponent();
             DataContext = this;
         }
+        // Обработчики событий для изменения параметров 
         private void CPBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             InfectionProbability = int.Parse(((ComboBoxItem)CPBox.SelectedItem).Tag.ToString());
@@ -65,12 +69,12 @@ namespace Covid
         }
         private void StartSimulation_Click(object sender, RoutedEventArgs e)
         {
-            InitializeSimulation();
-            simulationTimer = new Timer(700);  
+            InitializeSimulation(); // Инициализация симуляции
+            simulationTimer = new Timer(700); // Запуск таймера с интервалом 700 мс
             simulationTimer.Elapsed += (s, args) => Dispatcher.Invoke(UpdateSimulation);
             simulationTimer.Start();
         }
-
+        // Инициализация людей в городе
         private void InitializeSimulation()
         {
             CityCanvas.Children.Clear();
@@ -100,6 +104,7 @@ namespace Covid
             }
        
         }
+        // Проверка, находится ли человек слишком близко к другому
         private bool IsTooClose(Person person)
         {
             double safeDistance = 2 * QuarantineDuration;
@@ -116,6 +121,7 @@ namespace Covid
             }
             return false;
         }
+        // Обновление состояния симуляции
         private void UpdateSimulation()
         {
             day++;
