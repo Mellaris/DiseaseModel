@@ -25,6 +25,7 @@ namespace Covid
         private List<Person> people = new List<Person>(); // Список людей в симуляции
         private Timer simulationTimer; // Таймер для обновления симуляции
         private int day = 0; // Счётчик дней в симуляции
+        public bool help = false;
 
         // Данные для графиков
         public ChartValues<int> SusceptibleValues { get; set; } = new ChartValues<int>();
@@ -69,10 +70,14 @@ namespace Covid
         }
         private void StartSimulation_Click(object sender, RoutedEventArgs e)
         {
+            help = false;
             InitializeSimulation(); // Инициализация симуляции
-            simulationTimer = new Timer(700); // Запуск таймера с интервалом 700 мс
-            simulationTimer.Elapsed += (s, args) => Dispatcher.Invoke(UpdateSimulation);
-            simulationTimer.Start();
+            if (help == true)
+            {
+                simulationTimer = new Timer(700); // Запуск таймера с интервалом 700 мс
+                simulationTimer.Elapsed += (s, args) => Dispatcher.Invoke(UpdateSimulation);
+                simulationTimer.Start();
+            }
         }
         // Инициализация людей в городе
         private void InitializeSimulation()
@@ -87,8 +92,10 @@ namespace Covid
             day = 0;
 
             int population = int.Parse(PopulationBox.Text);
-            if(population >= 500 &&  population <= 4000)
+            if (population >= 500 && population <= 3000)
             {
+                help = true;
+                Massage.Text = " ";
                 for (int i = 0; i < population; i++)
                 {
                     var person = new Person
@@ -102,7 +109,11 @@ namespace Covid
                     DrawPerson(person);
                 }
             }
-       
+            else
+            {
+                Massage.Text = "Количество людей может быть от 500 до 3000";
+            }
+
         }
         // Проверка, находится ли человек слишком близко к другому
         private bool IsTooClose(Person person)
@@ -133,11 +144,11 @@ namespace Covid
                 {
                     bool ignoresIsolation = random.Next(100) < (100 - SocialDistancing);
 
-                    if(ignoresIsolation || !IsTooClose(person))
+                    if (ignoresIsolation || !IsTooClose(person))
                     {
                         person.X += random.Next(-5, 6);
                         person.Y += random.Next(-5, 6);
-                    }                
+                    }
                 }
             }
 
@@ -153,7 +164,7 @@ namespace Covid
                             Math.Abs(people[i].Y - other.Y) < 15)  // Проверка расстояния
                         {
                             // Применение вероятности заражения
-                            int infectionChance = InfectionProbability; 
+                            int infectionChance = InfectionProbability;
                             int infectionNo = ASInfection;
 
 
@@ -162,7 +173,7 @@ namespace Covid
                                 other.State = State.Infected; // Заражаем
                                 other.InfectedDays = 0;  // Счётчик дней заражения обнуляется
 
-                                if(random.Next(0,101) <= ASInfection) //Добавляем невыявленные случаи
+                                if (random.Next(0, 101) <= ASInfection) //Добавляем невыявленные случаи
                                 {
                                     other.State = State.InfectedButNo;
                                 }
@@ -210,9 +221,9 @@ namespace Covid
             RemovedValues.Add(r);
             DeadValues.Add(d);
 
-            if(q > 50)
+            if (q > 50)
             {
-                foreach(var person in people.Where(p => p.State == State.Infected && !p.InQuarantine))
+                foreach (var person in people.Where(p => p.State == State.Infected && !p.InQuarantine))
                 {
                     person.InQuarantine = true;
                     person.DaysInQuarantine = 0;
@@ -252,6 +263,7 @@ namespace Covid
             }
         }
 
+        //Метод для отрисовки людей в городе
         private void DrawPerson(Person person)
         {
             Ellipse ellipse = new Ellipse
@@ -265,7 +277,7 @@ namespace Covid
                        Brushes.Gray
             };
 
-            if(person.InQuarantine)
+            if (person.InQuarantine)
             {
                 Canvas.SetLeft(ellipse, person.X);
                 Canvas.SetTop(ellipse, person.Y);
@@ -277,20 +289,22 @@ namespace Covid
                 Canvas.SetTop(ellipse, person.Y);
                 CityCanvas.Children.Add(ellipse);
             }
-          
+
         }
     }
 
+    //Класс для каждого человека
     public class Person
     {
         public double X { get; set; }
         public double Y { get; set; }
         public State State { get; set; }
-        public int InfectedDays { get; set; } 
-        public int DaysInQuarantine {  get; set; } = 0;
-        public bool InQuarantine { get; set;} = false;
+        public int InfectedDays { get; set; }
+        public int DaysInQuarantine { get; set; } = 0;
+        public bool InQuarantine { get; set; } = false;
     }
 
+    //Статусы состояний
     public enum State
     {
         Susceptible,

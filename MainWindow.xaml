@@ -66,7 +66,7 @@
                 <ComboBoxItem Content="21 день" Tag="21"/>
                 <ComboBoxItem Content="38 дней" Tag="38"/>
             </ComboBox>
-            
+
             <TextBlock Text="Невыявленные случаи (AC):"/>
             <ComboBox Name="ASBox" SelectionChanged="ComboBox_SelectionChanged">
                 <ComboBoxItem Content="5%" Tag="5" IsSelected="True"/>
@@ -75,6 +75,9 @@
             </ComboBox>
 
             <Button Name="StartButton" Content="Запустить симуляцию" Click="StartSimulation_Click" Margin="0,10,0,0"/>
+
+            <TextBlock x:Name="Massage" Margin="0,20,0,0"></TextBlock>
+
         </StackPanel>
 
         <!-- График заражений -->
